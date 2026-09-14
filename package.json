@@ -1,0 +1,14 @@
+{
+  "name": "path-to-peak",
+  "version": "1.0.0",
+  "description": "Personal athletic performance tracker (Capacitor Android app)",
+  "license": "ISC",
+  "dependencies": {
+    "@capacitor/android": "^8.5.2",
+    "@capacitor/core": "^8.5.2",
+    "chart.js": "^4.5.1"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^8.5.2"
+  }
+}

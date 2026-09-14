@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+<title>Path to Peak</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<div id="splash" class="splash">
+  <svg viewBox="0 0 108 108" width="120" height="120">
+    <path d="M14,88 L38,42 L52,58 L64,20 L80,50 L94,88 Z" fill="#17B8A6"/>
+    <path d="M64,20 L80,50 L94,88 L74,88 Z" fill="#0E8C7F"/>
+    <path id="splash-line" d="M24,80 L38,66 L48,72 L58,50 L64,20" fill="none" stroke="#F4FBFA" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle class="splash-dot dot-1" cx="24" cy="80" r="3.4" fill="#F4FBFA"/>
+    <circle class="splash-dot dot-2" cx="38" cy="66" r="3.4" fill="#F4FBFA"/>
+    <circle class="splash-dot dot-3" cx="48" cy="72" r="3.4" fill="#F4FBFA"/>
+    <circle class="splash-dot dot-4" cx="58" cy="50" r="3.4" fill="#F4FBFA"/>
+    <circle class="splash-dot dot-5" cx="64" cy="20" r="4.6" fill="#F4FBFA" stroke="#17B8A6" stroke-width="1.6"/>
+  </svg>
+  <div class="splash-title">Path to Peak</div>
+</div>
+
+<div id="app">
+  <header class="topbar">
+    <button id="btn-back" class="icon-btn hidden" aria-label="Back">‹</button>
+    <h1 id="topbar-title">Path to Peak</h1>
+    <button id="btn-menu" class="icon-btn" aria-label="Backup data">⋯</button>
+    <button id="btn-edit-metric" class="icon-btn hidden" aria-label="Edit metric">✎</button>
+  </header>
+
+  <main id="view-home" class="view">
+    <div id="metrics-list" class="metrics-list"></div>
+    <div id="empty-state" class="empty-state hidden">
+      <p>No metrics yet.</p>
+      <p class="muted">Tap + to add your first one — vertical jump, deadlift, 40m sprint, whatever you want to track.</p>
+    </div>
+  </main>
+
+  <main id="view-detail" class="view hidden">
+    <div class="detail-current">
+      <div class="detail-current-value" id="detail-value">—</div>
+      <div id="detail-delta" class="delta"></div>
+    </div>
+
+    <div id="goal-card" class="goal-card hidden"></div>
+
+    <div class="range-tabs" id="range-tabs">
+      <button type="button" data-range="1m">1M</button>
+      <button type="button" data-range="3m">3M</button>
+      <button type="button" data-range="6m">6M</button>
+      <button type="button" data-range="1y">1Y</button>
+      <button type="button" data-range="all" class="active">All</button>
+    </div>
+
+    <div class="chart-panel">
+      <canvas id="chart-canvas"></canvas>
+      <p id="chart-empty" class="muted chart-empty hidden"></p>
+    </div>
+
+    <div class="stats-grid" id="stats-grid"></div>
+
+    <div class="history-header"><h2>History</h2></div>
+    <div id="history-list" class="history-list"></div>
+  </main>
+
+  <button id="fab" class="fab" aria-label="Add">+</button>
+</div>
+
+<div id="modal-metric" class="modal-overlay hidden">
+  <div class="modal">
+    <h2 id="metric-modal-title">New metric</h2>
+    <label>Name
+      <input id="metric-name" type="text" placeholder="e.g. Vertical Jump" maxlength="40" />
+    </label>
+
+    <div class="field-label">Unit</div>
+    <div class="segmented" id="metric-unittype">
+      <button type="button" data-unittype="custom" class="active">Custom</button>
+      <button type="button" data-unittype="ft_in">Feet &amp; inches</button>
+    </div>
+    <label id="metric-unit-wrap">Unit label
+      <input id="metric-unit" type="text" placeholder="e.g. cm, kg, sec" maxlength="12" />
+    </label>
+
+    <div class="field-label">Improvement direction</div>
+    <div class="segmented" id="metric-direction">
+      <button type="button" data-dir="higher" class="active">Higher is better</button>
+      <button type="button" data-dir="lower">Lower is better</button>
+    </div>
+
+    <button type="button" id="goal-toggle" class="btn-text goal-toggle-btn">+ Add a goal</button>
+    <div id="goal-fields" class="hidden">
+      <div class="field-label">Target value</div>
+      <input id="goal-value" type="number" step="any" inputmode="decimal" placeholder="Target value" />
+      <div id="goal-value-ftin" class="ftin-row hidden">
+        <input id="goal-value-feet" type="number" step="1" inputmode="numeric" placeholder="Feet" />
+        <input id="goal-value-inches" type="number" step="any" inputmode="decimal" placeholder="Inches" />
+      </div>
+      <label>Target date (optional)
+        <input id="goal-date" type="date" />
+      </label>
+      <button type="button" id="goal-remove" class="btn-text danger hidden">Remove goal</button>
+    </div>
+
+    <div class="modal-actions">
+      <button id="metric-delete" class="btn-text danger hidden">Delete metric</button>
+      <div class="modal-actions-right">
+        <button id="metric-cancel" class="btn-text">Cancel</button>
+        <button id="metric-save" class="btn-primary">Save</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="modal-entry" class="modal-overlay hidden">
+  <div class="modal">
+    <h2 id="entry-modal-title">Add entry</h2>
+    <label>Date
+      <input id="entry-date" type="date" />
+    </label>
+
+    <label id="entry-value-standard-wrap">Value (<span id="entry-unit-label"></span>)
+      <input id="entry-value" type="number" step="any" inputmode="decimal" placeholder="0" />
+    </label>
+    <div id="entry-value-ftin-wrap" class="hidden">
+      <div class="field-label">Value (ft / in)</div>
+      <div class="ftin-row">
+        <input id="entry-value-feet" type="number" step="1" inputmode="numeric" placeholder="Feet" />
+        <input id="entry-value-inches" type="number" step="any" inputmode="decimal" placeholder="Inches" />
+      </div>
+    </div>
+
+    <label>Note (optional)
+      <input id="entry-note" type="text" maxlength="80" placeholder="e.g. felt heavy, PR attempt" />
+    </label>
+    <div class="modal-actions">
+      <button id="entry-delete" class="btn-text danger hidden">Delete</button>
+      <div class="modal-actions-right">
+        <button id="entry-cancel" class="btn-text">Cancel</button>
+        <button id="entry-save" class="btn-primary">Save</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="modal-data" class="modal-overlay hidden">
+  <div class="modal">
+    <h2>Backup data</h2>
+    <p class="muted">Copy your data as text to save somewhere safe (notes app, email to yourself), or paste it back in later to restore.</p>
+    <textarea id="data-textarea" rows="8" placeholder="Your data will appear here"></textarea>
+    <div class="modal-actions">
+      <div class="modal-actions-right" style="width:100%; justify-content:space-between;">
+        <button id="data-export" class="btn-text">Copy my data</button>
+        <button id="data-import" class="btn-primary">Restore from text</button>
+      </div>
+    </div>
+    <button id="data-close" class="btn-text" style="margin-top:8px;">Close</button>
+  </div>
+</div>
+
+<div id="toast" class="toast hidden"></div>
+
+<script src="lib/chart.umd.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

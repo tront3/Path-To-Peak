@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Path to Peak</string>
+    <string name="title_activity_main">Path to Peak</string>
+    <string name="package_name">com.trent.athletictracker</string>
+    <string name="custom_url_scheme">com.trent.athletictracker</string>
+</resources>
